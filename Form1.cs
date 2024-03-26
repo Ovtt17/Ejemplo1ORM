@@ -1,4 +1,5 @@
-﻿using Ejemplo1ORM.bdventa;
+﻿using DevExpress.Xpo;
+using Ejemplo1ORM.bdventa;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,9 +27,17 @@ namespace Ejemplo1ORM
             p.fecha_vence = DateTime.Today;
             p.precio = 100;
 
-            Categoria categoria = new Categoria(unitOfWork1);
-            categoria.idcategoria = 5;
-            p.categoria_idcategoria = categoria;
+            Categoria categoriaExistente = unitOfWork1.Query<Categoria>().FirstOrDefault(c => c.idcategoria == 5);
+
+            // Verificar si la categoría existe
+            if (categoriaExistente != null)
+            {
+                // Asignar la categoría existente al producto
+                p.categoria_idcategoria = categoriaExistente;
+            } else
+            {
+                return;
+            }
 
             p.Save();
             unitOfWork1.CommitChanges();
@@ -45,6 +54,11 @@ namespace Ejemplo1ORM
                 unitOfWork1.CommitChanges();
                 xpProductos.Reload();
             }
+        }
+
+        private void BtnGuardarCambios_Click(object sender, EventArgs e)
+        {
+            unitOfWork1.CommitChanges();
         }
     }
 }
